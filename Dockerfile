@@ -14,9 +14,12 @@ ENV INDEXING_ELASTIC_PORT ${INDEXING_ELASTIC_PORT}
 ENV INDEXING_ELASTIC_PROTOCOL ${INDEXING_ELASTIC_PROTOCOL}
 
 RUN mkdir -p /usr/src/app
-COPY . /usr/src/app
+COPY pom.xml /usr/src/app
+COPY samlocal /root/.m2/repository/gov/cdc/samlocal
 WORKDIR /usr/src/app
-RUN mvn clean package
+RUN mvn dependency:resolve
+COPY . /usr/src/app
+RUN mvn clean package -Dmaven.test.skip=true
 
 # run stage
 FROM openjdk:8-jre-alpine
