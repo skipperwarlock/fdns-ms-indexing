@@ -223,6 +223,7 @@ public class IndexingApplicationTests {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
+		System.out.println(body.getJson().toString());//@TODO: REMOVE THIS
 		assertThat(body).hasJsonPathStringValue("@.cause.error.type");
 		assertThat(body).extractingJsonPathStringValue("@.cause.error.type").isEqualTo("index_not_found_exception");
 		
@@ -300,7 +301,7 @@ public class IndexingApplicationTests {
 			String id = String.format("%02d", i);
 			response = this.restTemplate.exchange(baseUrlPath + "/index/{type}/{id}", HttpMethod.POST, null, JsonNode.class, configurationProfileName, id);
 			body = this.json.write(response.getBody());
-			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 			assertThat(body).hasJsonPathBooleanValue("@.elk.created");
 			assertThat(body).extractingJsonPathBooleanValue("@.elk.created").isEqualTo(true);
 			assertThat(body).hasJsonPathNumberValue("@.elk._version");
