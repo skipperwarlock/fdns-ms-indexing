@@ -155,7 +155,7 @@ public class IndexingController {
 
 			return new ResponseEntity<>(mapper.readTree(response.toString()), HttpStatus.CREATED);
 
-		}catch (ServiceException e){
+		} catch (ServiceException e){
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_INDEXOBJECT, log);
 			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
@@ -488,14 +488,13 @@ public class IndexingController {
 	@RequestMapping(value = "search/scroll/{config}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Scroll search result.", notes = "Scroll search result.")
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Returns objects"),
+			@ApiResponse(code = 200, message = "Returns result"),
 			@ApiResponse(code = 400, message = "Route parameters or json payload contain invalid data"),
 			@ApiResponse(code = 401, message = "HTTP header lacks valid OAuth2 token"),
 			@ApiResponse(code = 403, message = "HTTP header has valid OAuth2 token but lacks the appropriate scope to use this route"),
 			@ApiResponse(code = 404, message = "Not found")
 	})
 	@ResponseBody
-	//@TODO: what is this function?
 	public ResponseEntity<?> scrollSearch(
 			@ApiIgnore @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
 			@ApiParam(value = "Config Name") @PathVariable(value = "config") String configName,
@@ -529,9 +528,13 @@ public class IndexingController {
 			}
 
 			return new ResponseEntity<>(mapper.readTree(elkObject.toString()), HttpStatus.OK);
+		} catch (ServiceException e){
+			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
+			LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
+			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
 			logger.error(e);
-			LoggerHelper.log(MessageHelper.METHOD_SEARCHOBJECT, log);
+			LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
 
 			return ErrorHandler.getInstance().handle(e, log);
 		}
@@ -539,8 +542,14 @@ public class IndexingController {
 
 	@RequestMapping(value = "search/scroll", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Delete Scroll Index.", notes = "Delete Scroll Index.")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Index deleted"),
+			@ApiResponse(code = 400, message = "Route parameters or json payload contain invalid data"),
+			@ApiResponse(code = 401, message = "HTTP header lacks valid OAuth2 token"),
+			@ApiResponse(code = 403, message = "HTTP header has valid OAuth2 token but lacks the appropriate scope to use this route"),
+			@ApiResponse(code = 404, message = "Not found")
+	})
 	@ResponseBody
-	//@TODO: what is this?
 	public ResponseEntity<?> deleteScrollIndex(@ApiParam(value = "Scroll identifier") @RequestParam(value = "scrollId", required = true, defaultValue = "") String scrollId) {
 
 		ObjectMapper mapper = new ObjectMapper();
@@ -554,6 +563,10 @@ public class IndexingController {
 			JSONObject elkObject = new JSONObject(elkResponseStr);
 
 			return new ResponseEntity<>(mapper.readTree(elkObject.toString()), HttpStatus.OK);
+		} catch (ServiceException e){
+			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
+			LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
+			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
 			logger.error(e);
 			LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
@@ -565,8 +578,14 @@ public class IndexingController {
 	@PreAuthorize("!@authz.isSecured() or #oauth2.hasScope('indexing.'.concat(#configName))")
 	@RequestMapping(value = "mapping/{config}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Define a mapping in elasticsearch.", notes = "Define a mapping in elasticsearch.")
+	@ApiResponses(value = {
+			@ApiResponse(code = 201, message = "Mapping created"),
+			@ApiResponse(code = 400, message = "Route parameters or json payload contain invalid data"),
+			@ApiResponse(code = 401, message = "HTTP header lacks valid OAuth2 token"),
+			@ApiResponse(code = 403, message = "HTTP header has valid OAuth2 token but lacks the appropriate scope to use this route"),
+			@ApiResponse(code = 404, message = "Not found")
+	})
 	@ResponseBody
-	//@TODO: how to use?
 	public ResponseEntity<?> defineMapping(
 			@ApiIgnore @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
 			@RequestBody String payload,
@@ -593,7 +612,7 @@ public class IndexingController {
 			Response elkResponse = ElasticHelper.getInstance().defineMapping(index, type, new JSONObject(payload));
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 
-			return new ResponseEntity<>(mapper.readTree(elkResponseStr), HttpStatus.OK);
+			return new ResponseEntity<>(mapper.readTree(elkResponseStr), HttpStatus.CREATED);
 		} catch (ServiceException e){
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_DEFINEMAPPING, log);
