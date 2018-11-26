@@ -74,7 +74,7 @@ public class IndexingApplicationTests {
 		JacksonTester.initFields(this, objectMapper);	
 		
 		// Define the object URL
-		System.setProperty("OBJECT_URL", "http://fdns-ms-object:8083");
+		System.setProperty("OBJECT_URL", "http://localhost:8083");
 		
 		// Add the config and load it
 		String payload = getConfig("test.json");
@@ -276,7 +276,7 @@ public class IndexingApplicationTests {
 		// Index object with a wrong type
 		ResponseEntity<JsonNode> response = this.restTemplate.exchange(baseUrlPath + "/index/{type}/{id}", HttpMethod.POST, null, JsonNode.class, "_unknown_", "_unknown_");
 		JsonContent<JsonNode> body = this.json.write(response.getBody());
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
 		assertThat(body).hasJsonPathStringValue("@.message");
