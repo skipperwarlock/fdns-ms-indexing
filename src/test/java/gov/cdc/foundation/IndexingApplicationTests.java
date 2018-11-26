@@ -143,7 +143,7 @@ public class IndexingApplicationTests {
 		// Delete index that does not exists
 		ResponseEntity<JsonNode> response = this.restTemplate.exchange(baseUrlPath + "/index/{type}", HttpMethod.DELETE, null, JsonNode.class, configurationProfileName);
 		JsonContent<JsonNode> body = this.json.write(response.getBody());
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
 		assertThat(body).hasJsonPathStringValue("@.cause.error.reason");
@@ -152,7 +152,7 @@ public class IndexingApplicationTests {
 		// Delete index with a wrong type
 		response = this.restTemplate.exchange(baseUrlPath + "/index/{type}", HttpMethod.DELETE, null, JsonNode.class, "_unknown_");
 		body = this.json.write(response.getBody());
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
 		assertThat(body).hasJsonPathStringValue("@.message");
@@ -161,7 +161,7 @@ public class IndexingApplicationTests {
 		// Create index with a wrong type
 		response = this.restTemplate.exchange(baseUrlPath + "/index/{type}", HttpMethod.PUT, null, JsonNode.class, "_unknown_");
 		body = this.json.write(response.getBody());
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
 		assertThat(body).hasJsonPathStringValue("@.message");
@@ -193,7 +193,7 @@ public class IndexingApplicationTests {
 		// Delete index (a 2nd time)
 		response = this.restTemplate.exchange(baseUrlPath + "/index/{type}", HttpMethod.DELETE, null, JsonNode.class, configurationProfileName);
 		body = this.json.write(response.getBody());
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
 		assertThat(body).hasJsonPathStringValue("@.cause.error.type");
@@ -216,7 +216,7 @@ public class IndexingApplicationTests {
 		// Create mapping without index
 		ResponseEntity<JsonNode> response = this.restTemplate.exchange(baseUrlPath + "/mapping/{type}", HttpMethod.POST, emptyMappingPayload, JsonNode.class, configurationProfileName);
 		JsonContent<JsonNode> body = this.json.write(response.getBody());
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
 		assertThat(body).hasJsonPathStringValue("@.cause.error.type");
@@ -225,7 +225,7 @@ public class IndexingApplicationTests {
 		// Create mapping with a wrong type
 		response = this.restTemplate.exchange(baseUrlPath + "/mapping/{type}", HttpMethod.POST, emptyMappingPayload, JsonNode.class,  "_unknown_");
 		body = this.json.write(response.getBody());
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
 		assertThat(body).hasJsonPathStringValue("@.message");
@@ -285,7 +285,7 @@ public class IndexingApplicationTests {
 		// Index object with a wrong id
 		response = this.restTemplate.exchange(baseUrlPath + "/index/{type}/{id}", HttpMethod.POST, null, JsonNode.class, configurationProfileName, "_unknown_");
 		body = this.json.write(response.getBody());
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
 		assertThat(body).hasJsonPathStringValue("@.message");
@@ -346,7 +346,7 @@ public class IndexingApplicationTests {
 		// Search object with a wrong type
 		response = this.restTemplate.exchange(baseUrlPath + "/search/{type}", HttpMethod.POST, null, JsonNode.class, "_unknown_");
 		body = this.json.write(response.getBody());
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
 		assertThat(body).hasJsonPathStringValue("@.message");
