@@ -82,8 +82,12 @@ public class IndexingApplicationTests {
 		JSONObject config = ConfigurationHelper.getInstance().getConfiguration("test", null);
 
 		// Delete the collection
-		deleteCollection(config);
-		
+		try{
+			deleteCollection(config);
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+
 		// Create some items in the database
 		objectIds = new ArrayList<>();
 		for (int i = 0; i < NB_OF_ITEMS_TO_CREATE; i++) {
