@@ -346,6 +346,13 @@ public class IndexingController {
 	@PreAuthorize("!@authz.isSecured() or #oauth2.hasScope('indexing.'.concat(#configName))")
 	@RequestMapping(value = "get/{config}/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Get an indexed object.", notes = "Get an indexed object.")
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Returns object"),
+			@ApiResponse(code = 400, message = "Route parameters or json payload contain invalid data"),
+			@ApiResponse(code = 401, message = "HTTP header lacks valid OAuth2 token"),
+			@ApiResponse(code = 403, message = "HTTP header has valid OAuth2 token but lacks the appropriate scope to use this route"),
+			@ApiResponse(code = 404, message = "Object not found")
+	})
 	@ResponseBody
 	public ResponseEntity<?> getObject(
 			@ApiIgnore @RequestHeader(value = "Authorization", required = false) String authorizationHeader,
@@ -391,6 +398,10 @@ public class IndexingController {
 			} else
 				return new ResponseEntity<>(mapper.readTree(elkResponseStr), HttpStatus.OK);
 
+		} catch (ServiceException e){
+			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
+			LoggerHelper.log(MessageHelper.METHOD_GETOBJECT, log);
+			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
 			logger.error(e);
 			LoggerHelper.log(MessageHelper.METHOD_GETOBJECT, log);
