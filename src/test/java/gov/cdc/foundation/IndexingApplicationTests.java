@@ -74,7 +74,7 @@ public class IndexingApplicationTests {
 		JacksonTester.initFields(this, objectMapper);	
 		
 		// Define the object URL
-		System.setProperty("OBJECT_URL", "http://localhost:8083");
+		System.setProperty("OBJECT_URL", "http://fdns-ms-object:8083");
 		
 		// Add the config and load it
 		String payload = getConfig("test.json");
