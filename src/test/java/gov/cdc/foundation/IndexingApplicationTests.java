@@ -317,7 +317,7 @@ public class IndexingApplicationTests {
 			String id = String.format("%02d", i);
 			response = this.restTemplate.exchange(baseUrlPath + "/index/{type}/{id}", HttpMethod.POST, null, JsonNode.class, configurationProfileName, id);
 			body = this.json.write(response.getBody());
-			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 			assertThat(body).hasJsonPathBooleanValue("@.elk.created");
 			assertThat(body).extractingJsonPathBooleanValue("@.elk.created").isEqualTo(false);
 			assertThat(body).hasJsonPathNumberValue("@.elk._version");
