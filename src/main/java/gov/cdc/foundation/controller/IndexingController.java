@@ -706,7 +706,8 @@ public class IndexingController {
 
 			return new ResponseEntity<>(mapper.readTree(elkResponseStr), HttpStatus.OK);
 		} catch (ServiceException e){
-			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
+//			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
+			log.put(MessageHelper.CONST_MESSAGE, "FIRED");
 			LoggerHelper.log(MessageHelper.METHOD_DELETEINDEX, log);
 			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
