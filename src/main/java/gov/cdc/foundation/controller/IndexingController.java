@@ -709,7 +709,6 @@ public class IndexingController {
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			log.put("testval1",e.toString());
 			log.put("testval2",e.getLocalizedMessage());
-			log.put("testval3",e.getObj().toString());
 			LoggerHelper.log(MessageHelper.METHOD_DELETEINDEX, log);
 			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
