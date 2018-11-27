@@ -633,7 +633,8 @@ public class IndexingController {
 			@ApiResponse(code = 400, message = "Route parameters or json payload contain invalid data"),
 			@ApiResponse(code = 401, message = "HTTP header lacks valid OAuth2 token"),
 			@ApiResponse(code = 403, message = "HTTP header has valid OAuth2 token but lacks the appropriate scope to use this route"),
-			@ApiResponse(code = 404, message = "Not found")
+			@ApiResponse(code = 404, message = "Not found"),
+			@ApiResponse(code = 409, message = "Index has already been created")
 	})
 	@ResponseBody
 	public ResponseEntity<?> createIndex(
@@ -659,7 +660,7 @@ public class IndexingController {
 			try{
 				elkResponse = ElasticHelper.getInstance().createIndex(index);
 			}catch (ServiceException e){
-				log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
+				log.put(MessageHelper.CONST_MESSAGE, MessageHelper.ERROR_INDEX_ALREADY_EXIST);
 				LoggerHelper.log(MessageHelper.METHOD_CREATEINDEX,log);
 				return ErrorHandler.getInstance().handle(HttpStatus.CONFLICT,log);
 			}

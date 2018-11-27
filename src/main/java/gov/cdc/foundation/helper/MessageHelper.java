@@ -31,6 +31,7 @@ public class MessageHelper extends AbstractMessageHelper {
 	public static final String ERROR_NO_COLLECTION = "The collection has not been provided in the configuration file.";
 	public static final String ERROR_NO_INDEX = "The index has not been provided in the configuration file.";
 	public static final String ERROR_INDEX_DOESNT_EXIST = "This index doesn't exist.";
+	public static final String ERROR_INDEX_ALREADY_EXIST = "This index already exists.";
 	public static final String ERROR_NO_TYPE = "The type has not been provided in the configuration file.";
 	public static final String ERROR_NO_OBJECT = "The following object doesn't exist.";
 	public static final String ERROR_BULK_MAX = "The bulk indexing processs accepts a maximum of 100 ids.";
