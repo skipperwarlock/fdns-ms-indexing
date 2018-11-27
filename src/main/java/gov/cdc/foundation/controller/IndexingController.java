@@ -705,7 +705,6 @@ public class IndexingController {
 			try {
 				elkResponse = ElasticHelper.getInstance().deleteIndex(index);
 			}catch (ServiceException e){
-				log.put("Index",index);
 				throw new ServiceException(MessageHelper.ERROR_INDEX_DOESNT_EXIST);
 			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
