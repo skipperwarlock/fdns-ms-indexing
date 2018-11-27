@@ -693,20 +693,19 @@ public class IndexingController {
 		log.put(MessageHelper.CONST_OBJECTTYPE, configName);
 
 		try {
-			log.put("location","1");
 			JSONObject config = ConfigurationHelper.getInstance().getConfiguration(configName, authorizationHeader);
 
-			log.put("location","2");
 			Object document = Configuration.defaultConfiguration().jsonProvider().parse(config.toString());
-			log.put("location","3");
 			String index = JsonPath.read(document, IndexingController.CONST_ELASTIC_INDEX);
-			log.put("location","4");
+
 			if (StringUtils.isEmpty(index))
 				throw new ServiceException(MessageHelper.ERROR_NO_INDEX);
 
 			Response elkResponse = ElasticHelper.getInstance().deleteIndex(index);
+			log.put("location","1");
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 
+			log.put("location","2");
 			return new ResponseEntity<>(mapper.readTree(elkResponseStr), HttpStatus.OK);
 		} catch (ServiceException e){
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
