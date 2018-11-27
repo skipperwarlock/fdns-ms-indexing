@@ -659,7 +659,9 @@ public class IndexingController {
 			try{
 				elkResponse = ElasticHelper.getInstance().createIndex(index);
 			}catch (ServiceException e){
-				throw new ServiceException("Index Already Exists");
+				log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
+				LoggerHelper.log(MessageHelper.METHOD_CREATEINDEX,log);
+				return ErrorHandler.getInstance().handle(HttpStatus.CONFLICT,log);
 			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 
