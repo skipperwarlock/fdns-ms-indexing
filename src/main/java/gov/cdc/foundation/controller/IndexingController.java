@@ -655,7 +655,12 @@ public class IndexingController {
 			if (StringUtils.isEmpty(index))
 				throw new ServiceException(MessageHelper.ERROR_NO_INDEX);
 
-			Response elkResponse = ElasticHelper.getInstance().createIndex(index);
+			Response elkResponse = null;
+			try{
+				elkResponse = ElasticHelper.getInstance().createIndex(index);
+			}catch (ServiceException e){
+				throw new ServiceException("Index Already Exists");
+			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 
 			return new ResponseEntity<>(mapper.readTree(elkResponseStr), HttpStatus.OK);
