@@ -697,15 +697,19 @@ public class IndexingController {
 
 			Object document = Configuration.defaultConfiguration().jsonProvider().parse(config.toString());
 			String index = JsonPath.read(document, IndexingController.CONST_ELASTIC_INDEX);
-
+			log.put("index",index);
 			if (StringUtils.isEmpty(index))
 				throw new ServiceException(MessageHelper.ERROR_NO_INDEX);
 
-			Response elkResponse = ElasticHelper.getInstance().deleteIndex(index);
-			log.put("location","1");
+			Response elkResponse = null;
+			try {
+				elkResponse = ElasticHelper.getInstance().deleteIndex(index);
+			}catch (ServiceException e){
+				log.put("Index",index);
+				throw new ServiceException(MessageHelper.ERROR_INDEX_DOESNT_EXIST);
+			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 
-			log.put("location","2");
 			return new ResponseEntity<>(mapper.readTree(elkResponseStr), HttpStatus.OK);
 		} catch (ServiceException e){
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
