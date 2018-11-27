@@ -698,8 +698,8 @@ public class IndexingController {
 			Object document = Configuration.defaultConfiguration().jsonProvider().parse(config.toString());
 			String index = JsonPath.read(document, IndexingController.CONST_ELASTIC_INDEX);
 
-			if (StringUtils.isEmpty(index))
-				throw new ServiceException(MessageHelper.ERROR_NO_INDEX);
+//			if (StringUtils.isEmpty(index))
+//				throw new ServiceException(MessageHelper.ERROR_NO_INDEX);
 
 			Response elkResponse = ElasticHelper.getInstance().deleteIndex(index);
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
