@@ -147,11 +147,12 @@ public class IndexingApplicationTests {
 		// Delete index that does not exists
 		ResponseEntity<JsonNode> response = this.restTemplate.exchange(baseUrlPath + "/index/{type}", HttpMethod.DELETE, null, JsonNode.class, configurationProfileName);
 		JsonContent<JsonNode> body = this.json.write(response.getBody());
+		System.out.println("Manage Indexes: " + body.getJson().toString());//@TODO: REMOVE THIS
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
 		assertThat(body).hasJsonPathStringValue("@.cause.error.reason");
-		assertThat(body).extractingJsonPathStringValue("@.cause.error.reason").isEqualTo("no such index");
+		assertThat(body).extractingJsonPathStringValue("@.cause.error.reason").isEqualTo("This index doesn't exist.");
 		
 		// Delete index with a wrong type
 		response = this.restTemplate.exchange(baseUrlPath + "/index/{type}", HttpMethod.DELETE, null, JsonNode.class, "_unknown_");
@@ -220,10 +221,10 @@ public class IndexingApplicationTests {
 		// Create mapping without index
 		ResponseEntity<JsonNode> response = this.restTemplate.exchange(baseUrlPath + "/mapping/{type}", HttpMethod.POST, emptyMappingPayload, JsonNode.class, configurationProfileName);
 		JsonContent<JsonNode> body = this.json.write(response.getBody());
+		System.out.println("Define Mapping: " + body.getJson().toString());//@TODO: REMOVE THIS
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
-		System.out.println(body.getJson().toString());//@TODO: REMOVE THIS
 		assertThat(body).hasJsonPathStringValue("@.cause.error.type");
 		assertThat(body).extractingJsonPathStringValue("@.cause.error.type").isEqualTo("index_not_found_exception");
 		
