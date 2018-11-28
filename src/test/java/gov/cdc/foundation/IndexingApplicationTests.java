@@ -146,6 +146,7 @@ public class IndexingApplicationTests {
 	public void manageIndexes() throws IOException {
 		// Delete index that does not exists
 		ResponseEntity<JsonNode> response = this.restTemplate.exchange(baseUrlPath + "/index/{type}", HttpMethod.DELETE, null, JsonNode.class, configurationProfileName);
+		//grab response from second run to make sure that the index doesn't exist
 		response = this.restTemplate.exchange(baseUrlPath + "/index/{type}", HttpMethod.DELETE, null, JsonNode.class, configurationProfileName);
 		JsonContent<JsonNode> body = this.json.write(response.getBody());
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
@@ -221,7 +222,6 @@ public class IndexingApplicationTests {
 		// Create mapping without index
 		ResponseEntity<JsonNode> response = this.restTemplate.exchange(baseUrlPath + "/mapping/{type}", HttpMethod.POST, emptyMappingPayload, JsonNode.class, configurationProfileName);
 		JsonContent<JsonNode> body = this.json.write(response.getBody());
-		System.out.println("Define Mapping: " + body.getJson().toString());//@TODO: REMOVE THIS
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
