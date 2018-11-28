@@ -613,6 +613,7 @@ public class IndexingController {
 			try{
 				elkResponse = ElasticHelper.getInstance().defineMapping(index, type, new JSONObject(payload));
 			}catch(ServiceException e){
+				System.out.println("MESSAGE: " + e.getMessage());
 				throw new ServiceException(MessageHelper.ERROR_INDEX_DOESNT_EXIST);
 			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
