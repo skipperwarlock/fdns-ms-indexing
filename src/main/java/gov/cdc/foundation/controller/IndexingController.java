@@ -609,7 +609,12 @@ public class IndexingController {
 			if (StringUtils.isEmpty(type))
 				throw new ServiceException(MessageHelper.ERROR_NO_TYPE);
 
-			Response elkResponse = ElasticHelper.getInstance().defineMapping(index, type, new JSONObject(payload));
+			Response elkResponse = null;
+			try{
+				elkResponse = ElasticHelper.getInstance().defineMapping(index, type, new JSONObject(payload));
+			}catch(ServiceException e){
+				throw new ServiceException(MessageHelper.ERROR_INDEX_DOESNT_EXIST);
+			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 
 			return new ResponseEntity<>(mapper.readTree(elkResponseStr), HttpStatus.CREATED);
