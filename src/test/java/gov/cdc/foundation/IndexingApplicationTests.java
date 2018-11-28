@@ -146,6 +146,7 @@ public class IndexingApplicationTests {
 	public void manageIndexes() throws IOException {
 		// Delete index that does not exists
 		ResponseEntity<JsonNode> response = this.restTemplate.exchange(baseUrlPath + "/index/{type}", HttpMethod.DELETE, null, JsonNode.class, configurationProfileName);
+		response = this.restTemplate.exchange(baseUrlPath + "/index/{type}", HttpMethod.DELETE, null, JsonNode.class, configurationProfileName);
 		JsonContent<JsonNode> body = this.json.write(response.getBody());
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
