@@ -615,8 +615,12 @@ public class IndexingController {
 			}catch(ServiceException e){
 				//@TODO: look at json object error.type to determine how to handle error in these scenarios. This applies to create and delete index and any others you changed.
 				System.out.println("JSON STRING" + e.getObj().toString());
-				System.out.println("ERROR STRRING" + e.getObj().getJSONObject("error").toString());
-				throw new ServiceException(MessageHelper.ERROR_INDEX_DOESNT_EXIST);
+				System.out.println("ERROR STRING" + e.getObj().getJSONObject("error").toString());
+				if (e.getObj().getJSONObject("error").get("type").equals("index_not_found_exception")) {
+					throw new ServiceException(MessageHelper.ERROR_INDEX_DOESNT_EXIST);
+				} else {
+					throw new Exception(e.getObj().getJSONObject("error").get("reason").toString());
+				}
 			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 
