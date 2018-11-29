@@ -256,7 +256,7 @@ public class IndexingApplicationTests {
 		// Create mapping
 		response = this.restTemplate.exchange(baseUrlPath + "/mapping/{type}", HttpMethod.POST, validMappingPayload, JsonNode.class, configurationProfileName);
 		body = this.json.write(response.getBody());
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 		assertThat(body).hasJsonPathBooleanValue("@.acknowledged");
 		assertThat(body).extractingJsonPathBooleanValue("@.acknowledged").isEqualTo(true);
 		
