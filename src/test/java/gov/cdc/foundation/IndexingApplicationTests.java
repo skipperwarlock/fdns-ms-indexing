@@ -250,8 +250,8 @@ public class IndexingApplicationTests {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
-		assertThat(body).hasJsonPathStringValue("@.cause.error.type");
-		assertThat(body).extractingJsonPathStringValue("@.cause.error.type").isEqualTo("mapper_parsing_exception");
+		assertThat(body).hasJsonPathStringValue("@.message");
+		assertThat(body).extractingJsonPathStringValue("@.message").isEqualTo("malformed mapping no root object found");
 		
 		// Create mapping
 		response = this.restTemplate.exchange(baseUrlPath + "/mapping/{type}", HttpMethod.POST, validMappingPayload, JsonNode.class, configurationProfileName);
