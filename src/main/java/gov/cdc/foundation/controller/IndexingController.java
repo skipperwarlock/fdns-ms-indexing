@@ -523,6 +523,7 @@ public class IndexingController {
 				}
 			}*/
 			Response elkResponse = null;
+			System.out.println("SCROLL");
 			try{
 				elkResponse = ElasticHelper.getInstance().scrollSearch(scrollId, scroll);
 			}catch(ServiceException e){
