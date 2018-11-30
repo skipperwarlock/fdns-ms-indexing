@@ -527,6 +527,8 @@ public class IndexingController {
 				elkResponse = ElasticHelper.getInstance().scrollSearch(scrollId, scroll);
 			}catch(ServiceException e){
 				System.out.println("SCROLL: " + e.getObj().toString());
+			}catch(Exception e){
+			    e.printStackTrace();
 			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 			JSONObject elkObject = new JSONObject(elkResponseStr);
