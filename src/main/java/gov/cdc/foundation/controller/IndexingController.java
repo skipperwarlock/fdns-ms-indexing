@@ -675,12 +675,11 @@ public class IndexingController {
 				System.out.println("CREATE: " + e.getObj().toString());
 				log.put(MessageHelper.CONST_MESSAGE, MessageHelper.ERROR_INDEX_ALREADY_EXIST);
 				LoggerHelper.log(MessageHelper.METHOD_CREATEINDEX,log);
-				return ErrorHandler.getInstance().handle(HttpStatus.CONFLICT,log);
-				/*if (e.getObj().getJSONObject("error").get("type").equals("index_not_found_exception")) {
-					throw new ServiceException(MessageHelper.ERROR_INDEX_DOESNT_EXIST);
+				if (e.getObj().getJSONObject("error").get("type").equals("index_already_exists_exception")) {
+					return ErrorHandler.getInstance().handle(HttpStatus.CONFLICT,log);
 				}else {
 					throw new Exception(e.getObj().getJSONObject("error").get("reason").toString());
-				}*/
+				}
 			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 

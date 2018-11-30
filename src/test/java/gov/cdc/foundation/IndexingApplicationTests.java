@@ -186,8 +186,8 @@ public class IndexingApplicationTests {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
-		assertThat(body).hasJsonPathStringValue("@.cause.error.type");
-		assertThat(body).extractingJsonPathStringValue("@.cause.error.type").isEqualTo("index_already_exists_exception");
+		assertThat(body).hasJsonPathStringValue("@.message");
+		assertThat(body).extractingJsonPathStringValue("@.message").isEqualTo("This index already exists.");
 		
 		// Delete index 
 		response = this.restTemplate.exchange(baseUrlPath + "/index/{type}", HttpMethod.DELETE, null, JsonNode.class, configurationProfileName);
@@ -202,8 +202,8 @@ public class IndexingApplicationTests {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
-		assertThat(body).hasJsonPathStringValue("@.cause.error.type");
-		assertThat(body).extractingJsonPathStringValue("@.cause.error.type").isEqualTo("index_not_found_exception");
+		assertThat(body).hasJsonPathStringValue("@.message");
+		assertThat(body).extractingJsonPathStringValue("@.message").isEqualTo("This index doesn't exist.");
 	}
 	
 	@Test
