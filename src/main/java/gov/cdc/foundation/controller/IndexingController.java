@@ -512,13 +512,12 @@ public class IndexingController {
 			JSONObject config = ConfigurationHelper.getInstance().getConfiguration(configName, authorizationHeader);
 			Object document = Configuration.defaultConfiguration().jsonProvider().parse(config.toString());
 
-			Response elkResponse = null;
-			try{
+//			Response elkResponse = null;
+			Response elkResponse = ElasticHelper.getInstance().scrollSearch(scrollId, scroll);
+			/*try{
 				elkResponse = ElasticHelper.getInstance().scrollSearch(scrollId, scroll);
 			}catch(ServiceException e){
 				System.out.println("SCROLL: " + e.getObj().toString());
-				System.out.println("SCROLL MESSAGE: " + e.getMessage());
-				System.out.println("SCROLL CAUSE: " + e.getCause().toString());
 				String errorType = e.getObj().getJSONObject("error").get("type").toString();
 				if(errorType.equals("illegal_argument_exception") || errorType.equals("parse_exception")){
 					log.put(MessageHelper.CONST_MESSAGE, e.getObj().getJSONObject("error").get("reason").toString());
@@ -527,7 +526,7 @@ public class IndexingController {
 				}else{
 					throw new Exception(e.getObj().getJSONObject("error").get("reason").toString());
 				}
-			}
+			}*/
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 			JSONObject elkObject = new JSONObject(elkResponseStr);
 
