@@ -613,8 +613,6 @@ public class IndexingController {
 			try{
 				elkResponse = ElasticHelper.getInstance().defineMapping(index, type, new JSONObject(payload));
 			}catch(ServiceException e){
-				//@TODO: look at json object error.type to determine how to handle error in these scenarios. This applies to create and delete index and any others you changed.
-				System.out.println("JSON STRING" + e.getObj().toString());
 				if (e.getObj().getJSONObject("error").get("type").equals("index_not_found_exception")) {
 					throw new ServiceException(MessageHelper.ERROR_INDEX_DOESNT_EXIST);
 				} else {
@@ -672,7 +670,6 @@ public class IndexingController {
 			try{
 				elkResponse = ElasticHelper.getInstance().createIndex(index);
 			}catch (ServiceException e){
-				System.out.println("CREATE: " + e.getObj().toString());
 				log.put(MessageHelper.CONST_MESSAGE, MessageHelper.ERROR_INDEX_ALREADY_EXIST);
 				LoggerHelper.log(MessageHelper.METHOD_CREATEINDEX,log);
 				if (e.getObj().getJSONObject("error").get("type").equals("index_already_exists_exception")) {
