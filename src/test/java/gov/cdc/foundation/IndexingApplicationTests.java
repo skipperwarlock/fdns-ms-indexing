@@ -152,8 +152,8 @@ public class IndexingApplicationTests {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
-		assertThat(body).hasJsonPathStringValue("@.cause.error.reason");
-		assertThat(body).extractingJsonPathStringValue("@.cause.error.reason").isEqualTo("no such index");
+		assertThat(body).hasJsonPathStringValue("@.message");
+		assertThat(body).extractingJsonPathStringValue("@.message").isEqualTo("This index doesn't exist.");
 		
 		// Delete index with a wrong type
 		response = this.restTemplate.exchange(baseUrlPath + "/index/{type}", HttpMethod.DELETE, null, JsonNode.class, "_unknown_");
