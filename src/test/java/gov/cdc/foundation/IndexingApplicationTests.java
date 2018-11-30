@@ -263,6 +263,7 @@ public class IndexingApplicationTests {
 		// Create mapping (but changing the type)
 		response = this.restTemplate.exchange(baseUrlPath + "/mapping/{type}", HttpMethod.POST, validMappingPayload_v2, JsonNode.class, configurationProfileName);
 		body = this.json.write(response.getBody());
+		System.out.println("TEST: " + body.getJson().toString());
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
