@@ -672,9 +672,15 @@ public class IndexingController {
 			try{
 				elkResponse = ElasticHelper.getInstance().createIndex(index);
 			}catch (ServiceException e){
+				System.out.println("CREATE: " + e.getObj().toString());
 				log.put(MessageHelper.CONST_MESSAGE, MessageHelper.ERROR_INDEX_ALREADY_EXIST);
 				LoggerHelper.log(MessageHelper.METHOD_CREATEINDEX,log);
 				return ErrorHandler.getInstance().handle(HttpStatus.CONFLICT,log);
+				/*if (e.getObj().getJSONObject("error").get("type").equals("index_not_found_exception")) {
+					throw new ServiceException(MessageHelper.ERROR_INDEX_DOESNT_EXIST);
+				}else {
+					throw new Exception(e.getObj().getJSONObject("error").get("reason").toString());
+				}*/
 			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 
@@ -725,7 +731,11 @@ public class IndexingController {
 			try {
 				elkResponse = ElasticHelper.getInstance().deleteIndex(index);
 			}catch (ServiceException e){
-				throw new ServiceException(MessageHelper.ERROR_INDEX_DOESNT_EXIST);
+				if (e.getObj().getJSONObject("error").get("type").equals("index_not_found_exception")) {
+					throw new ServiceException(MessageHelper.ERROR_INDEX_DOESNT_EXIST);
+				}else {
+					throw new Exception(e.getObj().getJSONObject("error").get("reason").toString());
+				}
 			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 
