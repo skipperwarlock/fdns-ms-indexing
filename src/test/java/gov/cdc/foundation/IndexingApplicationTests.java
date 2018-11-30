@@ -41,6 +41,7 @@ import com.jayway.jsonpath.JsonPath;
 
 import gov.cdc.foundation.helper.ConfigurationHelper;
 import gov.cdc.helper.ObjectHelper;
+import org.springframework.web.client.HttpClientErrorException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
@@ -82,11 +83,7 @@ public class IndexingApplicationTests {
 		JSONObject config = ConfigurationHelper.getInstance().getConfiguration("test", null);
 
 		// Delete the collection
-		try{
-			deleteCollection(config);
-		}catch (Exception e){
-			System.out.println(e.getMessage());
-		}
+		deleteCollection(config);
 
 		// Create some items in the database
 		objectIds = new ArrayList<>();
@@ -125,7 +122,14 @@ public class IndexingApplicationTests {
 		String database = JsonPath.read(document, "$.mongo.database");
 		String collection = JsonPath.read(document, "$.mongo.collection");
 
-		ObjectHelper.getInstance().deleteCollection(database, collection);
+		//if it's already been deleted we'll get a 404
+		try {
+			ObjectHelper.getInstance().deleteCollection(database, collection);
+		}catch (HttpClientErrorException e){
+			if(!e.getStatusCode().equals(HttpStatus.NOT_FOUND)){
+				throw e;
+			}
+		}
 	}
 
 	@Test
