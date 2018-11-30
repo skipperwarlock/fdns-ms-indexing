@@ -598,14 +598,10 @@ public class IndexingController {
 		log.put(MessageHelper.CONST_OBJECTTYPE, configName);
 
 		try {
-			log.put("debug","1");
 			JSONObject config = ConfigurationHelper.getInstance().getConfiguration(configName, authorizationHeader);
 
-			log.put("debug","2");
 			Object document = Configuration.defaultConfiguration().jsonProvider().parse(config.toString());
-			log.put("debug","3");
 			String index = JsonPath.read(document, IndexingController.CONST_ELASTIC_INDEX);
-			log.put("debug","4");
 			String type = JsonPath.read(document, IndexingController.CONST_ELASTIC_TYPE);
 
 			if (StringUtils.isEmpty(index))
@@ -613,15 +609,12 @@ public class IndexingController {
 			if (StringUtils.isEmpty(type))
 				throw new ServiceException(MessageHelper.ERROR_NO_TYPE);
 
-			log.put("debug","5");
 			Response elkResponse = null;
 			try{
 				elkResponse = ElasticHelper.getInstance().defineMapping(index, type, new JSONObject(payload));
-				log.put("debug","6");
 			}catch(ServiceException e){
 				//@TODO: look at json object error.type to determine how to handle error in these scenarios. This applies to create and delete index and any others you changed.
 				System.out.println("JSON STRING" + e.getObj().toString());
-				System.out.println("ERROR STRING" + e.getObj().getJSONObject("error").toString());
 				if (e.getObj().getJSONObject("error").get("type").equals("index_not_found_exception")) {
 					throw new ServiceException(MessageHelper.ERROR_INDEX_DOESNT_EXIST);
 				} else {
@@ -630,7 +623,6 @@ public class IndexingController {
 			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 
-			log.put("debug","7");
 			return new ResponseEntity<>(mapper.readTree(elkResponseStr), HttpStatus.CREATED);
 		} catch (ServiceException e){
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());

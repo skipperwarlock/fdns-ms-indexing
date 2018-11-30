@@ -267,8 +267,8 @@ public class IndexingApplicationTests {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 		assertThat(body).hasJsonPathBooleanValue("@.success");
 		assertThat(body).extractingJsonPathBooleanValue("@.success").isEqualTo(false);
-		assertThat(body).hasJsonPathStringValue("@.cause.error.type");
-		assertThat(body).extractingJsonPathStringValue("@.cause.error.type").isEqualTo("illegal_argument_exception");
+		assertThat(body).hasJsonPathStringValue("@.message");
+		assertThat(body).extractingJsonPathStringValue("@.message").isEqualTo("mapper [value] of different type, current_type [text], merged_type [date]");
 
 		// Delete index 
 		response = this.restTemplate.exchange(baseUrlPath + "/index/{type}", HttpMethod.DELETE, null, JsonNode.class, configurationProfileName);
