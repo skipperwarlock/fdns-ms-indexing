@@ -85,7 +85,7 @@ public class IndexingApplicationTests {
 		try{
 			deleteCollection(config);
 		}catch (Exception e){
-			e.printStackTrace();
+			System.out.println(e.getMessage());
 		}
 
 		// Create some items in the database
