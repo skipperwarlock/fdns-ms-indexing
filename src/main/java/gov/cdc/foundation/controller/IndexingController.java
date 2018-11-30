@@ -511,7 +511,23 @@ public class IndexingController {
 			JSONObject config = ConfigurationHelper.getInstance().getConfiguration(configName, authorizationHeader);
 			Object document = Configuration.defaultConfiguration().jsonProvider().parse(config.toString());
 
-			Response elkResponse = ElasticHelper.getInstance().scrollSearch(scrollId, scroll);
+			/*
+			Response elkResponse = null;
+			try {
+				elkResponse = ElasticHelper.getInstance().deleteIndex(index);
+			}catch (ServiceException e){
+				if (e.getObj().getJSONObject("error").get("type").equals("index_not_found_exception")) {
+					throw new ServiceException(MessageHelper.ERROR_INDEX_DOESNT_EXIST);
+				}else {
+					throw new Exception(e.getObj().getJSONObject("error").get("reason").toString());
+				}
+			}*/
+			Response elkResponse = null;
+			try{
+				elkResponse = ElasticHelper.getInstance().scrollSearch(scrollId, scroll);
+			}catch(ServiceException e){
+				System.out.println("SCROLL: " + e.getObj().toString());
+			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 			JSONObject elkObject = new JSONObject(elkResponseStr);
 

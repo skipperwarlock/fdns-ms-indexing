@@ -122,7 +122,7 @@ public class IndexingApplicationTests {
 		String database = JsonPath.read(document, "$.mongo.database");
 		String collection = JsonPath.read(document, "$.mongo.collection");
 
-		//if it's already been deleted we'll get a 404
+		//if it's already been deleted we'll get a 404, so we'll absorb that exception
 		try {
 			ObjectHelper.getInstance().deleteCollection(database, collection);
 		}catch (HttpClientErrorException e){
