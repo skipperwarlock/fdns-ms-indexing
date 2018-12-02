@@ -521,9 +521,8 @@ public class IndexingController {
 			JSONObject config = ConfigurationHelper.getInstance().getConfiguration(configName, authorizationHeader);
 			Object document = Configuration.defaultConfiguration().jsonProvider().parse(config.toString());
 
-//			Response elkResponse = null;
-			Response elkResponse = ElasticHelper.getInstance().scrollSearch(scrollId, scroll);
-			/*try{
+			Response elkResponse = null;
+			try{
 				elkResponse = ElasticHelper.getInstance().scrollSearch(scrollId, scroll);
 			}catch(ServiceException e){
 				System.out.println("SCROLL: " + e.getObj().toString());
@@ -535,7 +534,7 @@ public class IndexingController {
 				}else{
 					throw new Exception(e.getObj().getJSONObject("error").get("reason").toString());
 				}
-			}*/
+			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 			JSONObject elkObject = new JSONObject(elkResponseStr);
 
