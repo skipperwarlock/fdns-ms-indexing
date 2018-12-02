@@ -553,6 +553,7 @@ public class IndexingController {
 
 			return new ResponseEntity<>(mapper.readTree(elkObject.toString()), HttpStatus.OK);
 		} catch (ServiceException e){
+			log.put("cause",e.getObj());
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
 
