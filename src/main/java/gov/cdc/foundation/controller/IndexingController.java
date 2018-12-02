@@ -157,7 +157,9 @@ public class IndexingController {
 
 		} catch (ServiceException e){
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
+			log.put("cause", e.getObj());
 			LoggerHelper.log(MessageHelper.METHOD_INDEXOBJECT, log);
+
 			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
 			logger.error(e);
@@ -236,8 +238,10 @@ public class IndexingController {
 			return new ResponseEntity<>(mapper.readTree(response.toString()), HttpStatus.CREATED);
 
 		} catch (ServiceException e){
+			log.put("cause", e.getObj());
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_INDEXBULKOBJECTS, log);
+
 			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
 			logger.error(e);
@@ -303,8 +307,10 @@ public class IndexingController {
 			return new ResponseEntity<>(mapper.readTree(response.toString()), HttpStatus.CREATED);
 
 		} catch (ServiceException e){
+			log.put("cause", e.getObj());
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_INDEXALL, log);
+
 			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
 			logger.error(e);
@@ -399,8 +405,10 @@ public class IndexingController {
 				return new ResponseEntity<>(mapper.readTree(elkResponseStr), HttpStatus.OK);
 
 		} catch (ServiceException e){
+			log.put("cause", e.getObj());
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_GETOBJECT, log);
+
 			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
 			logger.error(e);
@@ -473,8 +481,10 @@ public class IndexingController {
 			return new ResponseEntity<>(mapper.readTree(elkObject.toString()), HttpStatus.OK);
 
 		} catch (ServiceException e){
+			log.put("cause", e.getObj());
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_SEARCHOBJECT, log);
+
 			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
 			logger.error(e);
@@ -544,8 +554,10 @@ public class IndexingController {
 
 			return new ResponseEntity<>(mapper.readTree(elkObject.toString()), HttpStatus.OK);
 		} catch (ServiceException e){
+			log.put("cause", e.getObj());
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
+
 			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
 			logger.error(e);
@@ -579,8 +591,10 @@ public class IndexingController {
 
 			return new ResponseEntity<>(mapper.readTree(elkObject.toString()), HttpStatus.OK);
 		} catch (ServiceException e){
+			log.put("cause", e.getObj());
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
+
 			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
 			logger.error(e);
@@ -629,6 +643,7 @@ public class IndexingController {
 				elkResponse = ElasticHelper.getInstance().defineMapping(index, type, new JSONObject(payload));
 			}catch(ServiceException e){
 				if (e.getObj().getJSONObject("error").get("type").equals("index_not_found_exception")) {
+					log.put("cause", e.getObj());
 					throw new ServiceException(MessageHelper.ERROR_INDEX_DOESNT_EXIST);
 				} else {
 					throw new Exception(e.getObj().getJSONObject("error").get("reason").toString());
@@ -638,6 +653,9 @@ public class IndexingController {
 
 			return new ResponseEntity<>(mapper.readTree(elkResponseStr), HttpStatus.CREATED);
 		} catch (ServiceException e){
+			if(!log.containsKey("cause")){
+				log.put("cause", e.getObj());
+			}
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_DEFINEMAPPING, log);
 
@@ -685,6 +703,7 @@ public class IndexingController {
 			try{
 				elkResponse = ElasticHelper.getInstance().createIndex(index);
 			}catch (ServiceException e){
+				log.put("cause", e.getObj());
 				log.put(MessageHelper.CONST_MESSAGE, MessageHelper.ERROR_INDEX_ALREADY_EXIST);
 				LoggerHelper.log(MessageHelper.METHOD_CREATEINDEX,log);
 				if (e.getObj().getJSONObject("error").get("type").equals("index_already_exists_exception")) {
@@ -697,8 +716,10 @@ public class IndexingController {
 
 			return new ResponseEntity<>(mapper.readTree(elkResponseStr), HttpStatus.OK);
 		} catch (ServiceException e){
+			log.put("cause", e.getObj());
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_CREATEINDEX, log);
+
 			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
 			logger.error(e);
@@ -752,8 +773,12 @@ public class IndexingController {
 
 			return new ResponseEntity<>(mapper.readTree(elkResponseStr), HttpStatus.OK);
 		} catch (ServiceException e){
+			if(!log.containsKey("cause")){
+				log.put("cause", e.getObj());
+			}
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_DELETEINDEX, log);
+
 			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
 			logger.error(e);
@@ -825,6 +850,7 @@ public class IndexingController {
 			return new ResponseEntity<>(mapper.readTree(json.toString()), returnStatus);
 
 		} catch (ServiceException e){
+			log.put("cause", e.getObj());
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_UPSERTCONFIG, log);
 			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
@@ -862,8 +888,10 @@ public class IndexingController {
 
 			return new ResponseEntity<>(mapper.readTree(helper.getObject(configName).toString()), HttpStatus.OK);
 		} catch (ServiceException e){
+			log.put("cause", e.getObj());
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_GETCONFIG, log);
+
 			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
 			logger.error(e);
@@ -902,8 +930,10 @@ public class IndexingController {
 
 			return new ResponseEntity<>(mapper.readTree("{ \"success\" : true }"), HttpStatus.OK);
 		} catch (ServiceException e){
+			log.put("cause", e.getObj());
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_DELETECONFIG, log);
+
 			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
 			logger.error(e);
