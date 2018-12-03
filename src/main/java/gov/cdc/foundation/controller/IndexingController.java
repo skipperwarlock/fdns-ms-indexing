@@ -971,7 +971,7 @@ public class IndexingController {
 			}
 		} else {
 			//if the exception thrown doesn't include error details, it means a valid scroll id was provided, but that scroll id wasn't found
-			log.put("scroll_id", scrollId);
+//			log.put("scroll_id", scrollId);
 //			throw new ServiceException(MessageHelper.ERROR_SCROLL_IDENTIFIER_DOESNT_EXIST);
 			return null; //FIX
 		}
