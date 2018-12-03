@@ -481,6 +481,7 @@ public class IndexingController {
 			return new ResponseEntity<>(mapper.readTree(elkObject.toString()), HttpStatus.OK);
 
 		} catch (ServiceException e){
+		    log.put("obj", e.getObj());
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_SEARCHOBJECT, log);
 
@@ -521,8 +522,6 @@ public class IndexingController {
 			JSONObject config = ConfigurationHelper.getInstance().getConfiguration(configName, authorizationHeader);
 			Object document = Configuration.defaultConfiguration().jsonProvider().parse(config.toString());
 
-			//if scroll search fails it will throw a ServiceException with the details in a json object
-			//We catch that exception, parse the type from the json, then rethrow the exception with the appropriate message
 			Response elkResponse = null;
 			try{
 				elkResponse = ElasticHelper.getInstance().scrollSearch(scrollId, scroll);
