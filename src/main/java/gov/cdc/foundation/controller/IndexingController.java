@@ -525,7 +525,6 @@ public class IndexingController {
 			try{
 				elkResponse = ElasticHelper.getInstance().scrollSearch(scrollId, scroll);
 			}catch(ServiceException e){
-				log.put("object",e.getObj());
 				if(e.getObj().has("error") && !e.getObj().isNull("error")) {
 					String errorType = e.getObj().getJSONObject("error").get("type").toString();
 					if (errorType.equals("illegal_argument_exception") || errorType.equals("parse_exception")) {
@@ -537,8 +536,7 @@ public class IndexingController {
 						throw new Exception(e.getObj().getJSONObject("error").get("reason").toString());
 					}
 				}else{
-					log.put("else", "true");
-					throw new Exception(e);
+					throw new ServiceException("This scroll identifier doesn't exist");
 				}
 			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
