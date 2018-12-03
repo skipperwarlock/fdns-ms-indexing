@@ -537,6 +537,7 @@ public class IndexingController {
 						throw new Exception(e.getObj().getJSONObject("error").get("reason").toString());
 					}
 				}else{
+					log.put("throw", "true");
 					throw new Exception(e);
 				}
 			}
