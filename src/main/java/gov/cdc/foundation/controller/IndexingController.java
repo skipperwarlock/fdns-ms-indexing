@@ -525,6 +525,7 @@ public class IndexingController {
 			try{
 				elkResponse = ElasticHelper.getInstance().scrollSearch(scrollId, scroll);
 			}catch(ServiceException e){
+				log.put("exception",e.getObj());
 				String errorType = e.getObj().getJSONObject("error").get("type").toString();
 				if(errorType.equals("illegal_argument_exception") || errorType.equals("parse_exception")){
 					log.put(MessageHelper.CONST_MESSAGE, e.getObj().getJSONObject("error").get("reason").toString());
