@@ -526,14 +526,18 @@ public class IndexingController {
 				elkResponse = ElasticHelper.getInstance().scrollSearch(scrollId, scroll);
 			}catch(ServiceException e){
 				log.put("exception",e.getObj());
-				String errorType = e.getObj().getJSONObject("error").get("type").toString();
-				if(errorType.equals("illegal_argument_exception") || errorType.equals("parse_exception")){
-					log.put(MessageHelper.CONST_MESSAGE, e.getObj().getJSONObject("error").get("reason").toString());
-					LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
+				if(e.getObj().has("error")) {
+					String errorType = e.getObj().getJSONObject("error").get("type").toString();
+					if (errorType.equals("illegal_argument_exception") || errorType.equals("parse_exception")) {
+						log.put(MessageHelper.CONST_MESSAGE, e.getObj().getJSONObject("error").get("reason").toString());
+						LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
 
-					return ErrorHandler.getInstance().handle(HttpStatus.UNPROCESSABLE_ENTITY, log);
+						return ErrorHandler.getInstance().handle(HttpStatus.UNPROCESSABLE_ENTITY, log);
+					} else {
+						throw new Exception(e.getObj().getJSONObject("error").get("reason").toString());
+					}
 				}else{
-					throw new Exception(e.getObj().getJSONObject("error").get("reason").toString());
+					throw new Exception(e);
 				}
 			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
