@@ -525,11 +525,11 @@ public class IndexingController {
 			try{
 				elkResponse = ElasticHelper.getInstance().scrollSearch(scrollId, scroll);
 			}catch(ServiceException e){
-				System.out.println("SCROLL: " + e.getObj().toString());
 				String errorType = e.getObj().getJSONObject("error").get("type").toString();
 				if(errorType.equals("illegal_argument_exception") || errorType.equals("parse_exception")){
 					log.put(MessageHelper.CONST_MESSAGE, e.getObj().getJSONObject("error").get("reason").toString());
 					LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
+
 					return ErrorHandler.getInstance().handle(HttpStatus.UNPROCESSABLE_ENTITY, log);
 				}else{
 					throw new Exception(e.getObj().getJSONObject("error").get("reason").toString());
@@ -552,7 +552,6 @@ public class IndexingController {
 
 			return new ResponseEntity<>(mapper.readTree(elkObject.toString()), HttpStatus.OK);
 		} catch (ServiceException e){
-			log.put("cause",e.getObj());
 			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
 
@@ -583,7 +582,20 @@ public class IndexingController {
 		log.put(MessageHelper.CONST_METHOD, MessageHelper.METHOD_SCROLL);
 
 		try {
-			Response elkResponse = ElasticHelper.getInstance().deleteScrollIndex(scrollId);
+			Response elkResponse = null;
+			try{
+				elkResponse = ElasticHelper.getInstance().deleteScrollIndex(scrollId);
+			}catch(ServiceException e){
+				String errorType = e.getObj().getJSONObject("error").get("type").toString();
+				if(errorType.equals("illegal_argument_exception") || errorType.equals("parse_exception")){
+					log.put(MessageHelper.CONST_MESSAGE, e.getObj().getJSONObject("error").get("reason").toString());
+					LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
+
+					return ErrorHandler.getInstance().handle(HttpStatus.UNPROCESSABLE_ENTITY, log);
+				}else{
+					throw new Exception(e.getObj().getJSONObject("error").get("reason").toString());
+				}
+			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 			JSONObject elkObject = new JSONObject(elkResponseStr);
 
