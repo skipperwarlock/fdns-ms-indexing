@@ -527,7 +527,7 @@ public class IndexingController {
 			try{
 				elkResponse = ElasticHelper.getInstance().scrollSearch(scrollId, scroll);
 			}catch(ServiceException e){
-			    return handleScrollServiceException(e, log);
+			    return handleScrollServiceException(e, scrollId, log);
 			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 			JSONObject elkObject = new JSONObject(elkResponseStr);
@@ -581,7 +581,7 @@ public class IndexingController {
 			try{
 				elkResponse = ElasticHelper.getInstance().deleteScrollIndex(scrollId);
 			}catch(ServiceException e){
-				return handleScrollServiceException(e, log);
+				return handleScrollServiceException(e, scrollId, log);
 			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 			JSONObject elkObject = new JSONObject(elkResponseStr);
@@ -924,7 +924,7 @@ public class IndexingController {
 
 	}
 
-	private ResponseEntity<?> handleScrollServiceException(ServiceException se, Map<String, Object> log){
+	private ResponseEntity<?> handleScrollServiceException(ServiceException se, String scrollId, Map<String, Object> log){
 		if(se.getObj().has(MessageHelper.CONST_ERROR) && !se.getObj().isNull(MessageHelper.CONST_ERROR)) {
 			String errorType = se.getObj().getJSONObject(MessageHelper.CONST_ERROR).get(MessageHelper.CONST_TYPE).toString();
 
@@ -942,9 +942,7 @@ public class IndexingController {
 			}
 		} else {
 			//if the exception thrown doesn't include error details, it means a valid scroll id was provided, but that scroll id wasn't found
-            if(se.getObj().has("_scroll_id")) {
-				log.put("scroll_id", se.getObj().getJSONObject("_scroll_id").toString());
-			}
+			log.put("scroll_id", scrollId);
             log.put(MessageHelper.CONST_MESSAGE, MessageHelper.ERROR_SCROLL_IDENTIFIER_DOESNT_EXIST);
             LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
 
