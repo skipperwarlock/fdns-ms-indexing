@@ -527,23 +527,7 @@ public class IndexingController {
 			try{
 				elkResponse = ElasticHelper.getInstance().scrollSearch(scrollId, scroll);
 			}catch(ServiceException e){
-				log.put("obj",e.getObj());
-				if(e.getObj().has(MessageHelper.CONST_ERROR) && !e.getObj().isNull(MessageHelper.CONST_ERROR)) {
-					String errorType = e.getObj().getJSONObject(MessageHelper.CONST_ERROR).get(MessageHelper.CONST_TYPE).toString();
-
-					if (errorType.equals(MessageHelper.EXCEPTION_ILLEGAL_ARGUMENT) || errorType.equals(MessageHelper.EXCEPTION_PARSE)) {
-						log.put(MessageHelper.CONST_MESSAGE, e.getObj().getJSONObject(MessageHelper.CONST_ERROR).get(MessageHelper.CONST_REASON).toString());
-						LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
-
-						return ErrorHandler.getInstance().handle(HttpStatus.UNPROCESSABLE_ENTITY, log);
-					} else {
-						throw new Exception(e.getObj().getJSONObject(MessageHelper.CONST_ERROR).get(MessageHelper.CONST_REASON).toString());
-					}
-				} else {
-					//if the exception thrown doesn't include error details, it means a valid scroll id was provided, but that scroll id wasn't found
-					log.put("scroll_id", scrollId);
-					throw new ServiceException(MessageHelper.ERROR_SCROLL_IDENTIFIER_DOESNT_EXIST);
-				}
+			    return handleScrollServiceException(e, log);
 			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 			JSONObject elkObject = new JSONObject(elkResponseStr);
@@ -597,25 +581,12 @@ public class IndexingController {
 			try{
 				elkResponse = ElasticHelper.getInstance().deleteScrollIndex(scrollId);
 			}catch(ServiceException e){
-				String errorType = e.getObj().getJSONObject("error").get("type").toString();
-				if(errorType.equals("illegal_argument_exception") || errorType.equals("parse_exception")){
-					log.put(MessageHelper.CONST_MESSAGE, e.getObj().getJSONObject("error").get("reason").toString());
-					LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
-
-					return ErrorHandler.getInstance().handle(HttpStatus.UNPROCESSABLE_ENTITY, log);
-				}else{
-					throw new Exception(e.getObj().getJSONObject("error").get("reason").toString());
-				}
+				return handleScrollServiceException(e, log);
 			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
 			JSONObject elkObject = new JSONObject(elkResponseStr);
 
 			return new ResponseEntity<>(mapper.readTree(elkObject.toString()), HttpStatus.OK);
-		} catch (ServiceException e){
-			log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
-			LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
-
-			return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		} catch (Exception e) {
 			logger.error(e);
 			LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
@@ -971,9 +942,13 @@ public class IndexingController {
 			}
 		} else {
 			//if the exception thrown doesn't include error details, it means a valid scroll id was provided, but that scroll id wasn't found
-//			log.put("scroll_id", scrollId);
-//			throw new ServiceException(MessageHelper.ERROR_SCROLL_IDENTIFIER_DOESNT_EXIST);
-			return null; //FIX
+            if(se.getObj().has("_scroll_id")) {
+				log.put("scroll_id", se.getObj().getJSONObject("_scroll_id").toString());
+			}
+            log.put(MessageHelper.CONST_MESSAGE, MessageHelper.ERROR_SCROLL_IDENTIFIER_DOESNT_EXIST);
+            LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
+
+            return ErrorHandler.getInstance().handle(HttpStatus.NOT_FOUND, log);
 		}
 	}
 
