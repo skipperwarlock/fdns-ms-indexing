@@ -571,7 +571,8 @@ public class IndexingController {
 			@ApiResponse(code = 400, message = "Route parameters or json payload contain invalid data"),
 			@ApiResponse(code = 401, message = "HTTP header lacks valid OAuth2 token"),
 			@ApiResponse(code = 403, message = "HTTP header has valid OAuth2 token but lacks the appropriate scope to use this route"),
-			@ApiResponse(code = 404, message = "Not found")
+			@ApiResponse(code = 404, message = "Not found"),
+			@ApiResponse(code = 422, message = "Parameter(s) missing or invalid")
 	})
 	@ResponseBody
 	public ResponseEntity<?> deleteScrollIndex(@ApiParam(value = "Scroll identifier") @RequestParam(value = "scrollId", required = true, defaultValue = "") String scrollId) {
