@@ -521,22 +521,28 @@ public class IndexingController {
 			JSONObject config = ConfigurationHelper.getInstance().getConfiguration(configName, authorizationHeader);
 			Object document = Configuration.defaultConfiguration().jsonProvider().parse(config.toString());
 
+			//if scroll search fails it will throw a ServiceException with the details in a json object
+			//We catch that exception, parse the type from the json, then rethrow the exception with the appropriate message
 			Response elkResponse = null;
 			try{
 				elkResponse = ElasticHelper.getInstance().scrollSearch(scrollId, scroll);
 			}catch(ServiceException e){
-				if(e.getObj().has("error") && !e.getObj().isNull("error")) {
-					String errorType = e.getObj().getJSONObject("error").get("type").toString();
-					if (errorType.equals("illegal_argument_exception") || errorType.equals("parse_exception")) {
-						log.put(MessageHelper.CONST_MESSAGE, e.getObj().getJSONObject("error").get("reason").toString());
+				log.put("obj",e.getObj());
+				if(e.getObj().has(MessageHelper.CONST_ERROR) && !e.getObj().isNull(MessageHelper.CONST_ERROR)) {
+					String errorType = e.getObj().getJSONObject(MessageHelper.CONST_ERROR).get(MessageHelper.CONST_TYPE).toString();
+
+					if (errorType.equals(MessageHelper.EXCEPTION_ILLEGAL_ARGUMENT) || errorType.equals(MessageHelper.EXCEPTION_PARSE)) {
+						log.put(MessageHelper.CONST_MESSAGE, e.getObj().getJSONObject(MessageHelper.CONST_ERROR).get(MessageHelper.CONST_REASON).toString());
 						LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
 
 						return ErrorHandler.getInstance().handle(HttpStatus.UNPROCESSABLE_ENTITY, log);
 					} else {
-						throw new Exception(e.getObj().getJSONObject("error").get("reason").toString());
+						throw new Exception(e.getObj().getJSONObject(MessageHelper.CONST_ERROR).get(MessageHelper.CONST_REASON).toString());
 					}
-				}else{
-					throw new ServiceException("This scroll identifier doesn't exist");
+				} else {
+					//if the exception thrown doesn't include error details, it means a valid scroll id was provided, but that scroll id wasn't found
+					log.put("scroll_id", scrollId);
+					throw new ServiceException(MessageHelper.ERROR_SCROLL_IDENTIFIER_DOESNT_EXIST);
 				}
 			}
 			String elkResponseStr = IOUtils.toString(elkResponse.getEntity().getContent(), Charsets.UTF_8);
@@ -945,6 +951,30 @@ public class IndexingController {
 			return ErrorHandler.getInstance().handle(e, log);
 		}
 
+	}
+
+	private ResponseEntity<?> handleScrollServiceException(ServiceException se, Map<String, Object> log){
+		if(se.getObj().has(MessageHelper.CONST_ERROR) && !se.getObj().isNull(MessageHelper.CONST_ERROR)) {
+			String errorType = se.getObj().getJSONObject(MessageHelper.CONST_ERROR).get(MessageHelper.CONST_TYPE).toString();
+
+			if (errorType.equals(MessageHelper.EXCEPTION_ILLEGAL_ARGUMENT) || errorType.equals(MessageHelper.EXCEPTION_PARSE)) {
+				log.put(MessageHelper.CONST_MESSAGE, se.getObj().getJSONObject(MessageHelper.CONST_ERROR).get(MessageHelper.CONST_REASON).toString());
+				LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
+
+				return ErrorHandler.getInstance().handle(HttpStatus.UNPROCESSABLE_ENTITY, log);
+			} else {
+			    Exception e = new Exception(se.getObj().getJSONObject(MessageHelper.CONST_ERROR).get(MessageHelper.CONST_REASON).toString());
+				logger.error(e);
+				LoggerHelper.log(MessageHelper.METHOD_SCROLL, log);
+
+				return ErrorHandler.getInstance().handle(e, log);
+			}
+		} else {
+			//if the exception thrown doesn't include error details, it means a valid scroll id was provided, but that scroll id wasn't found
+			log.put("scroll_id", scrollId);
+//			throw new ServiceException(MessageHelper.ERROR_SCROLL_IDENTIFIER_DOESNT_EXIST);
+			return null; //FIX
+		}
 	}
 
 	private void prepareObject(JSONObject object, JSONObject config) throws ServiceException {
