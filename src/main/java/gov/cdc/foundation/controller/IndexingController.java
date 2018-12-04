@@ -482,7 +482,7 @@ public class IndexingController {
 
 		} catch (ServiceException e){
 		    if(e.getObj() != null && !e.getObj().isNull("error") && !e.getObj().getJSONObject("error").isNull("root_cause")){
-				log.put(MessageHelper.CONST_MESSAGE, e.getObj().getJSONObject("error").getJSONObject("root_cause").get("reason").toString());
+				log.put(MessageHelper.CONST_MESSAGE, e.getObj().getJSONObject("error").getJSONArray("root_cause").getJSONObject(0).get("reason"));
 			} else {
 				log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			}
