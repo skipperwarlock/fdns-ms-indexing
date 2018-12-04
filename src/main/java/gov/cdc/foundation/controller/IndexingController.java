@@ -481,7 +481,11 @@ public class IndexingController {
 			return new ResponseEntity<>(mapper.readTree(elkObject.toString()), HttpStatus.OK);
 
 		} catch (ServiceException e){
-		    if(e.getObj() != null && !e.getObj().isNull("error") && !e.getObj().getJSONObject("error").isNull("root_cause")){
+		    if(e.getObj() != null
+                && !e.getObj().isNull("error")
+                && !e.getObj().getJSONObject("error").isNull("root_cause")
+                && !e.getObj().getJSONObject("error").getJSONArray("root_cause").isEmpty()
+              ){
 				log.put(MessageHelper.CONST_MESSAGE, e.getObj().getJSONObject("error").getJSONArray("root_cause").getJSONObject(0).get("reason"));
 			} else {
 				log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
