@@ -11,6 +11,7 @@ public class MessageHelper extends AbstractMessageHelper {
 	public static final String CONST_OBJECTID = "objectId";
 	public static final String CONST_CONFIG = "config";
 	public static final String CONST_TYPE = "type";
+	public static final String CONST_ROOT_CAUSE = "root_cause";
 
 	public static final String METHOD_INDEX = "index";
 	public static final String METHOD_INDEXOBJECT = "indexObject";

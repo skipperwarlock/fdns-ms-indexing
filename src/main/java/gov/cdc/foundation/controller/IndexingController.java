@@ -482,11 +482,11 @@ public class IndexingController {
 
 		} catch (ServiceException e){
 		    if(e.getObj() != null
-                && !e.getObj().isNull("error")
-                && !e.getObj().getJSONObject("error").isNull("root_cause")
-                && !e.getObj().getJSONObject("error").getJSONArray("root_cause").isEmpty()
+                && !e.getObj().isNull(MessageHelper.CONST_ERROR)
+                && !e.getObj().getJSONObject(MessageHelper.CONST_ERROR).isNull(MessageHelper.CONST_ROOT_CAUSE)
+                && !e.getObj().getJSONObject(MessageHelper.CONST_ERROR).getJSONArray(MessageHelper.CONST_ROOT_CAUSE).isEmpty()
               ){
-				log.put(MessageHelper.CONST_MESSAGE, e.getObj().getJSONObject("error").getJSONArray("root_cause").getJSONObject(0).get("reason"));
+				log.put(MessageHelper.CONST_MESSAGE, e.getObj().getJSONObject(MessageHelper.CONST_ERROR).getJSONArray(MessageHelper.CONST_ROOT_CAUSE).getJSONObject(0).get(MessageHelper.CONST_REASON));
 			} else {
 				log.put(MessageHelper.CONST_MESSAGE, e.getMessage());
 			}
